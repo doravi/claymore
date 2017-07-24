@@ -1,7 +1,5 @@
 FROM abuisine/nvidia:17.04-375.66
 
-LABEL maintainer="Alexandre Buisine <alexandrejabuisine@gmail.com>"
-
 RUN DEBIAN_FRONTEND=noninteractive apt-get -qq update \
  && apt-get install -yqq --no-install-recommends \
 	vim-tiny \
