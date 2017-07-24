@@ -1,26 +1,9 @@
-FROM abuisine/nvidia:17.04-375.66
+FROM nvidia/cuda:8.0-runtime-ubuntu16.04
 
-RUN DEBIAN_FRONTEND=noninteractive apt-get -qq update \
- && apt-get install -yqq --no-install-recommends \
-	vim-tiny \
-	flip \
-	libcurl3 \
- && apt-get -yqq clean \
- && rm -rf /var/lib/apt/lists/*
-
-ENV CLAYMORE_VERSION="9.7"
-
-WORKDIR /home/claymore
-ADD https://github.com/nanopool/Claymore-Dual-Miner/releases/download/v${CLAYMORE_VERSION}/Claymore.s.Dual.Ethereum.Decred_Siacoin_Lbry_Pascal.AMD.NVIDIA.GPU.Miner.v${CLAYMORE_VERSION}.-.LINUX.tar.gz .
-
-ENV GPU_FORCE_64BIT_PTR=0 GPU_MAX_HEAP_SIZE=100 GPU_USE_SYNC_OBJECTS=1 GPU_MAX_ALLOC_PERCENT=100 GPU_SINGLE_ALLOC_PERCENT=100
-
-COPY resources/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
-RUN chmod +x /usr/local/bin/*
-
-ENV WALLET_ADDRESS="0x8d3c63a5121d346642e83b69a57a959abfb73812" \
- HOSTS="eu1.ethermine.org:4444:x:1:0 eu2.ethermine.org:4444:x:1:0"
-#HOSTS should be setted as follows: <hostname>:<port>:<password>:<esm>:<allpools>
-
-ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
-CMD ["-mode", "1", "-ftime", "10"]
+RUN apt-get update
+RUN apt-get install -y wget
+RUN wget -O claymore.tar.gz "https://drive.google.com/uc?export=download&id=0B69wv2iqszefNFpNU1c2bkxuZ2s"
+RUN tar -xf claymore.tar.gz
+RUN mv "Claymore's Dual Ethereum+Decred_Siacoin_Lbry_Pascal AMD+NVIDIA GPU Miner v9.7 - LINUX" claymore-9.7
+WORKDIR claymore-9.7
+ENTRYPOINT ./ethdcrminer64 -epool ${POOL} -ewal ${WALLET} ${ARGS}
